@@ -12,7 +12,7 @@ import { TrainingService } from '../training.service';
 })
 export class PastTrainingComponent implements OnInit, AfterViewInit {
   displayedColumns = ['date', 'name', 'duration', 'calories', 'state'];
-  dataSource: any = new MatTableDataSource<Exercise[]>();
+  dataSource: any = new MatTableDataSource<Exercise>();
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -25,7 +25,8 @@ export class PastTrainingComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.dataSource = this.trainingService.getPastExercises();
+    this.dataSource = new MatTableDataSource(this.trainingService.getPastExercises());
+    //console.log(JSON.stringify(this.dataSource));
   }
 
   doFilter(filter: string) {
