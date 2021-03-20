@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "ng-fitness-tracker-nitesh"
+  },
+  "targets": {
+    "ng-fitness-tracker-nitesh": {
+      "hosting": {
+        "fitness-tracker": [
+          "ng-fitness-tracker-nitesh"
+        ]
+      }
+    }
   }
 }

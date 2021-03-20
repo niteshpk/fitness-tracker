@@ -14,6 +14,7 @@
             name="email"
             email
             required
+            value="test@email.com"
             #emailInput="ngModel"
             >
             <mat-error *ngIf="!emailInput.hasError('required')">Please enter valid email</mat-error>
@@ -28,6 +29,7 @@
             name="password"
             minlength="6"
             required
+            value="test@123"
             #pwInput="ngModel"
             >
             <mat-hint align="end">{{pwInput?.value?.length}} / 6</mat-hint>
