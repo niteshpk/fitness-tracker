@@ -1,5 +1,5 @@
 
-<ng-container *ngIf="!isLoading">
+<ng-container *ngIf="!(isLoading$ | async)">
   <div fxLayoutAlign="center center">
     <mat-form-field fxFlex="40%">
       <input matInput type="text" (keyup)="doFilter($event.target.value)" placeholder="filter">
@@ -40,5 +40,5 @@
   <mat-paginator [pageSize]="5" [pageSizeOptions]="[1, 5, 10, 25, 100]"></mat-paginator>
 </ng-container>
 
-<mat-spinner *ngIf="isLoading"></mat-spinner>
+<mat-spinner *ngIf="(isLoading$ | async)"></mat-spinner>
 

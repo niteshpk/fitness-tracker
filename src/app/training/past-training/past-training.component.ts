@@ -2,11 +2,12 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subscription } from 'rxjs';
-import { UIService } from 'src/app/shared/ui.service';
+import { Observable } from 'rxjs';
 import { Exercise } from '../excercise.model';
 import { TrainingService } from '../training.service';
-
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../app.reducer';
+import * as fromTraining from '../training.reducer';
 @Component({
   selector: 'app-past-training',
   templateUrl: './past-training.component.html',
@@ -15,29 +16,25 @@ import { TrainingService } from '../training.service';
 export class PastTrainingComponent implements OnInit, AfterViewInit {
   displayedColumns = ['date', 'name', 'duration', 'calories', 'state'];
   dataSource: any = new MatTableDataSource<Exercise>();
-  exerciseSubscription: Subscription;
-  isLoading = false;
-  private loadingSubs: Subscription;
+  isLoading$: Observable<boolean>;
   
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(
     private trainingService: TrainingService,
-    private uiService: UIService
+    private store: Store<fromTraining.State>
     ) { }
-  
   
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;    
     this.dataSource.paginator = this.paginator;
   }
 
-  ngOnInit(): void {  
-    this.loadingSubs = this.uiService.loadingStateChanged.subscribe((isLoading) => {
-      this.isLoading = isLoading;
-    });
-    this.exerciseSubscription = this.trainingService.pastExercisesChanged.subscribe(
+  ngOnInit(): void {
+    this.isLoading$ = this.store.select(fromRoot.getIsLoading);
+    this.store.select(fromTraining.getFinishedExercises)
+    .subscribe(
       (exercises) => {
         this.dataSource = new MatTableDataSource<Exercise>(exercises);
         this.dataSource.sort = this.sort;    
@@ -54,15 +51,6 @@ export class PastTrainingComponent implements OnInit, AfterViewInit {
     this.dataSource.filter = filter.trim().toLocaleLowerCase();
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.exerciseSubscription) {
-      this.exerciseSubscription.unsubscribe();
-    }
-    if (this.loadingSubs) {
-      this.loadingSubs.unsubscribe();
     }
   }
 }

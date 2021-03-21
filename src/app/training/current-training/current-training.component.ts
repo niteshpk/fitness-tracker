@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TrainingService } from '../training.service';
 import { StopTrainingComponent } from './stop-training.component';
+import { Store } from '@ngrx/store';
+import * as fromTraining from '../training.reducer'; 
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-current-training',
@@ -13,7 +16,8 @@ export class CurrentTrainingComponent implements OnInit {
   timer: any;
   constructor(
     private dialog: MatDialog,
-    private trainingService: TrainingService
+    private trainingService: TrainingService,
+    private store: Store<fromTraining.State>
     ) { }
 
   ngOnInit(): void {
@@ -21,14 +25,18 @@ export class CurrentTrainingComponent implements OnInit {
   }
 
   startOrResumeTimer() {
-    const step = this.trainingService.getRunningExercise().duration / 100 * 1000;
-    this.timer = setInterval(() => {
-      this.progress +=1;
-      if (this.progress >= 100) {
-        this.trainingService.completeExercise();
-        clearInterval(this.timer);
-      }
-    }, step);
+    this.store.select(fromTraining.getActiveTraining)
+    .pipe(take(1))
+    .subscribe((exercise) => {
+      const step = exercise.duration / 100 * 1000;
+      this.timer = setInterval(() => {
+        this.progress +=1;
+        if (this.progress >= 100) {
+          this.trainingService.completeExercise();
+          clearInterval(this.timer);
+        }
+      }, step);
+    });
   }
 
   onStop() {
@@ -40,6 +48,7 @@ export class CurrentTrainingComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      console.log('result:', result)
       if (result) {
         this.trainingService.cancelExercise(this.progress);
       } else {
