@@ -72,7 +72,7 @@ export class TrainingService {
       this.addDataToDatabase({
         ...exercise, 
         date: new Date(), 
-        state: 'completed'
+        state: 'Completed'
       });
       this.store.dispatch(new Training.StopTraining());
     });
@@ -87,7 +87,7 @@ export class TrainingService {
         duration: exercise.duration * (progress/ 100),
         calories: exercise.calories * (progress/ 100),
         date: new Date(), 
-        state: 'cancelled'
+        state: 'Cancelled'
       });
       this.store.dispatch(new Training.StopTraining());
     });
